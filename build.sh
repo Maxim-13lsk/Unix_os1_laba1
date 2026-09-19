@@ -34,7 +34,14 @@ if [ ! -d "$WORK_DIR" ]; then
     exit 4 # что-то с созданием временной дирректории
 fi
 
-trap 'rm -rf "$WORK_DIR"' EXIT INT TERM HUP
+exit_handler() {
+  local rc=$?
+  trap - EXIT
+  rm -rf -- "$WORK_DIR"
+  exit $rc
+}
+
+trap exit_handler EXIT INT TERM HUP QUIT PIPE
 
 echo "Создан временный каталог: $WORK_DIR"
 
